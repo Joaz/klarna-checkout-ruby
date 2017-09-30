@@ -10,9 +10,11 @@ module Klarna
     class Resource
       extend HasOne
       extend HasMany
+			attr_accessor :raw
 
       def initialize(args = {})
-        self.class.defaults.deep_merge(args).each_pair do |attr, value|
+        self.raw=args
+				self.class.defaults.deep_merge(args).each_pair do |attr, value|
           setter = "#{attr}="
           self.send(setter, value) if respond_to?(setter)
         end

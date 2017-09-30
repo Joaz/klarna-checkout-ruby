@@ -16,7 +16,7 @@ module Klarna
         self.shared_secret ||= Klarna::Checkout.shared_secret
       end
 
-      VALID_ENVS = [:test, :production]
+      VALID_ENVS = [:test, :development, :production]
 
       def environment
         @environment || :test
@@ -66,6 +66,25 @@ module Klarna
         response = write_order(order)
         Order.new(JSON.parse(response.body))
       end
+
+			def activate_order(order)
+        path  = "/checkout/orders"
+        path += "/#{order.id}" if order.id
+
+        request_body = {"status":"created"}.to_json
+        response = https_connection.post do |req|
+          req.url path
+
+          req.headers['Authorization']   = "Klarna #{sign_payload(request_body)}"
+          req.headers['Accept']          = 'application/vnd.klarna.checkout.aggregated-order-v2+json'
+          req.headers['Content-Type']    = 'application/vnd.klarna.checkout.aggregated-order-v2+json'
+          req.headers['Accept-Encoding'] = ''
+
+          req.body = request_body
+        end
+        handle_status_code(response.status, response.body)
+        response
+			end
 
       # Based on example from:
       # http://developers.klarna.com/en/api-references-v1/klarna-checkout#authorization
