@@ -69,7 +69,7 @@ order = Klarna::Checkout::Order.new({
 client.create_order(order)
 order.id
 # => ID of the order (no other attributes are updated)
-# save the ID along your order.
+# save the ID for later use.
 
 # this will return the payment widget to display in the browser.
 order.gui.snippet
