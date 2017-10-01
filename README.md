@@ -5,7 +5,7 @@
 
 # Klarna Checkout
 
-Unofficial Ruby Wrapper for Klarnas Checkout Rest API.
+Unofficial Ruby Wrapper for Klarnas Checkout Rest API. 
 
 ## Installation
 
@@ -41,7 +41,6 @@ client = Klarna::Checkout::Client.new(environment: :test)
 client.shared_secret
 # => 'your-shared-secret'
 
-
 # Initialize an order
 order = Klarna::Checkout::Order.new({
   purchase_country: 'NO',
@@ -70,10 +69,24 @@ order = Klarna::Checkout::Order.new({
 client.create_order(order)
 order.id
 # => ID of the order (no other attributes are updated)
+# save the ID along your order.
 
+# this will return the payment widget to display in the browser.
+order.gui.snippet
+
+# After the payment is done, the API will do 2 things:
+# - invoke a POST on push_uri 
+# - redirect the user to confirmation_uri
+
+# At the point of redirect you need to fetch the order and activate it.
 
 # Read an order from Klarna
 order = client.read_order("1234ABCD")
+
+# Activate order:
+# this updates status from checkout_complete to created:
+client.activate_order(order) 
+
 
 
 # Configuring some global variables
